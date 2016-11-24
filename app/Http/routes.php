@@ -38,3 +38,5 @@ $app->get('/response', function (Illuminate\Http\Request $request) {
     return response()->make('Hello stranger', 200, ['Content-Type' => 'text/plain']);
 
 });
+
+$app->get('/books', 'BooksController@index');
