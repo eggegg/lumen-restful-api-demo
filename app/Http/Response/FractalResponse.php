@@ -8,6 +8,7 @@ use League\Fractal\Resource\Item;
 use League\Fractal\Resource\ResourceInterface;
 use League\Fractal\Serializer\SerializerAbstract;
 use League\Fractal\TransformerAbstract;
+use Illuminate\Http\Request;
 
 class FractalResponse
 {
@@ -15,10 +16,16 @@ class FractalResponse
 
     private $serializer;
 
-    public function __construct(Manager $manager, SerializerAbstract $serializer)
+    /**
+     * @var Request
+     */
+    private $request;
+
+    public function __construct(Manager $manager, SerializerAbstract $serializer, Request $request)
     {
         $this->manager = $manager;
         $this->serializer = $serializer;
+        $this->request = $request;
         $this->manager->setSerializer($serializer);
     }
 
@@ -39,5 +46,14 @@ class FractalResponse
     private function createDataArray(ResourceInterface $resource)
     {
         return $this->manager->createData($resource)->toArray();
+    }
+
+    public function parseIncludes($includes = null)
+    {
+        if (empty($includes)) {
+            $includes = $this->request->query('include', '');
+        }
+
+        $this->manager->parseIncludes($includes);
     }
 }
